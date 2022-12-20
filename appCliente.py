@@ -3,7 +3,7 @@ from threading import Thread                        # importando o módulo de Th
 
 class AppCliente(Thread):                           # Construtor 
     def __init__(self, connection, client):
-        super.__init__()
+        super().__init__()
         self.connection = connection                # especifica o socket do cliente ao ser chamada pelo método accept
         self.client = client                        # especifica o ip do cliente ao ser chamada pelo método accept
     
@@ -12,7 +12,7 @@ class AppCliente(Thread):                           # Construtor
 
         while(True):
             message = self.connection.recv(1024)
-            if ((message == False) or (btpProtocolv2.processing(message, self.client))):                # caso o cliente encontre problemas para se conectar, será então feito outra tentativa de se conectar
+            if not message or not btpProtocolv2.processing(message, self.connection, self.client):                # caso o cliente encontre problemas para se conectar, será então feito outra tentativa de se conectar
                 break
 
         self.connection.close()                      # encerra a conexão
