@@ -43,9 +43,18 @@ def processing(message, connection, client):
                 connection.send(str.encode(f'Diretório: {fileName}\n'))
             else:
                 connection.send(str.encode(f'Outros: {fileName}\n'))
-    elif (message[0].upper() == 'QUIT'):            # está funcionando
+    elif (message[0].upper() == 'ADD'):             # está funcionando (necessário tester com mais de um cliente)
+        semaphore.acquire()                         # uso de semáforo
+        fileName = ' '.join(message[1:])
         connection.send(str.encode(f'+OK\n'))
-        return False
+        with open(fileName, 'ab') as file:
+            while (True):
+                data = connection.recv(1024)
+                if (data.decode() == 'end'):
+                    break
+                file.write(data)
+                file.write(str.encode('\n'))
+        semaphore.release()
     elif (message[0].upper() == 'READ'):            # está funcionando
         fileName = ' '.join(message[1:])
         print(f'Arquivo solicitado: {fileName}')
@@ -64,30 +73,15 @@ def processing(message, connection, client):
         except Exception as error:
             connection.send(str.encod(f'-ERR {error}\n')) # mensagem de erro
 
-    elif (message[0].upper() == 'CRDIR'):           # 
+    elif (message[0].upper() == 'MKDIR'):           # 
         try:
             os.mkdir('./' + message[1])
             connection.send(str.encode(f'+OK\n'))
         except:                                     # mensagem de erro para o caso de já existir um diretório com o mesmo nome
             connection.send(str.encode(f'-ERR Diretório já existente\n'))
-    elif (message[0].upper() == 'PATH'):            # está funcionando
-        try:
-            path = os.getcwd()
-            connection.send(str.encode(f'+OK {path}\n'))
-        except Exception as error:
-            connection.send(str.encode(f'-ERR {error}\n'))
-    elif (message[0].upper() == 'ADD'):             # está funcionando (necessário tester com mais de um cliente)
-        semaphore.acquire()                         # uso de semáforo
-        fileName = ' '.join(message[1:])
+    elif (message[0].upper() == 'QUIT'):            # está funcionando
         connection.send(str.encode(f'+OK\n'))
-        with open(fileName, 'ab') as file:
-            while (True):
-                data = connection.recv(1024)
-                if (data.decode() == 'end'):
-                    break
-                file.write(data)
-                file.write(str.encode('\n'))
-        semaphore.release()
+        return False
     else:                                         # caso o comando digitado não esteja no dicionário
         connection.send(str.encode(f'-ERR Comando inválido!\n')) 
     

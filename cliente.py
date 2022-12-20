@@ -10,11 +10,10 @@ def decodeCommandUser(commandUser):
         'down': 'get',                          # faz download de um arquivo
         'cd': 'cwd',                            # muda de diretório
         'ls': 'list',                           # lista os arquivos em um diretório
-        'exit': 'quit',                         # encerra a conexão com o servidor
+        'up': 'add',                            # faz upload de um arquivo
         'cat': 'read',                          # mostra o conteúdo de um arquivo
-        'mkdir': 'makedir',                     # cria um diretório
-        'pwd': 'path',                          # mostra o caminho do diretório atual
-        'up': 'add'                          # faz upload de um arquivo
+        'crdir': 'mkdir',                       # cria um diretório
+        'exit': 'quit'                          # encerra a conexão com o servidor
     }
 
     tokens = commandUser.split()
@@ -31,7 +30,7 @@ print('-'*50)                                   # menu inicial
 print('Servidor FTP - Projeto Final SO/PIRC')
 print('-'*50)
 
-print('O servidor possui as seguintes funções:\n\n- GET:      Solicita o download de um arquivo\n- ADD:      Realiza o upload de um arquivo:\n- CWD:      Altera o diretório atual do servidor\n- LIST:     Solicita a lista de arquivos/diretórios\n- QUIT:     Encerra a conexão com o servidor')
+print('O servidor possui as seguintes funções:\n\n- DOWN: Solicita o download de um arquivo\n- CD: Altera o diretório atual do servidor\n- LS: Solicita a lista de arquivos/diretórios\n- UP: Realiza o upload de um arquivo:\n- CAT: Exibe o conteúdo de um arquivo\n- CRDIR: Cria um novo diretório:\n- EXIT: Encerra a conexão com o servidor')
 print('-'*50)
 
 print('Dados do servidor:', HOST+':'+str(PORT))
@@ -44,7 +43,7 @@ print('Para encerrar a conexão, use o comando "EXIT" ou pressione CTRL+C')
 while (True):
     try:
         print('-'*50)
-        commandUser = input('\nComando >>> ')
+        commandUser = input('Comando >>> ')
     except:
         commandUser = 'EXIT'
     command = decodeCommandUser(commandUser)
@@ -64,15 +63,6 @@ while (True):
         command[0] = command[0].upper()
         if (command[0] == 'QUIT'):
             break
-        elif (command[0] == 'READ'):
-            fileName = ' '.join(command[1:])
-            fileSize = int(messageStatus.split()[1])
-            print('\nConteúdo do arquivo "{}":'.format(fileName))
-            while (fileSize > 0):
-                data = serverSock.recv(MESSAGE_SIZE)
-                fileSize -= len(data)
-                data = data.decode()
-                print(data)
         elif (command[0] == 'GET'):
             fileName = ' '.join(command[1:])
             fileSize = int(messageStatus.split()[1])
@@ -84,14 +74,14 @@ while (True):
                     fileSize -= len(data)
                     if (fileSize == 0):
                         break
-        elif (command[0] == 'LIST'):    #****AJUSTE ESSA PARTE DO CODIGO PARA FICAR COM OS MESMOS NOMES DAS VARIÁVEIS
+        elif (command[0] == 'LIST'):
             fileName = int(messageStatus.split()[1])
             data = data.decode()
             while (True):
-                arquivos = data.split('\n')
-                residual = arquivos[-1]      
-                for arq in arquivos[:-1]:
-                    print(arq)
+                files = data.split('\n')
+                residual = files[-1]      
+                for file in files[:-1]:
+                    print(file)
                     fileName -= 1
                 if fileName == 0:
                     break
@@ -99,20 +89,6 @@ while (True):
                 if not data:
                     break
                 data = residual + data.decode()
-            '''fileNum = int(messageStatus.split()[1])
-            data = data.decode()
-            while (True):
-                files = data.split('\n')
-                filesRemain = files[-1]
-                for file in files[:-1]:
-                    print(file)
-                    fileNum -= 1
-                    if (fileNum == 0):
-                        break
-                    data = serverSock.recv(MESSAGE_SIZE)
-                    if not data:
-                        break
-                    data = filesRemain + data.decode()'''
         elif (command[0].upper() == 'ADD'):
             text = None
             print('Digite "end" (sem as aspas) numa linha em branco e pressione ENTER para enviar o texto.\n')
@@ -120,5 +96,14 @@ while (True):
             while (text != 'end'):
                 text = input()
                 serverSock.send(str.encode(text))
+        elif (command[0] == 'READ'):
+            fileName = ' '.join(command[1:])
+            fileSize = int(messageStatus.split()[1])
+            print('\nConteúdo do arquivo "{}":'.format(fileName))
+            while (fileSize > 0):
+                data = serverSock.recv(MESSAGE_SIZE)
+                fileSize -= len(data)
+                data = data.decode()
+                print(data)
 
 serverSock.close()

@@ -9,10 +9,11 @@ serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # o Construtor do
 serverSock.bind(server)                         # método para atribuir um endereço IP e uma porta a uma instância de socket
 serverSock.listen(10)                               # número máximo de conexões no server
 
+print('\nO servidor foi iniciado!\n')
+
 while (True):
     try:
-        connection, client = serverSock.accept()
-        print ('aaa testando')    # método para aceitar uma conexão recebida de um cliente
+        connection, client = serverSock.accept()    # método para aceitar uma conexão recebida de um cliente
     except:
         break                                       # caso não for possível se conectar, o server tentará novamente
 
