@@ -1,7 +1,7 @@
 import btpProtocolv2                                # importando 
 from threading import Thread                        # importando o módulo de Threads
 
-class AppCliente(Thread):                           # Construtor 
+class AppClient(Thread):                           # Construtor 
     def __init__(self, connection, client):
         super().__init__()
         self.connection = connection                # especifica o socket do cliente ao ser chamada pelo método accept

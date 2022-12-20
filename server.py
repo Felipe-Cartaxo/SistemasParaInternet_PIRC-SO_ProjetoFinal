@@ -1,4 +1,4 @@
-from appCliente import AppCliente                   # importando o Construtor de appCliente.py
+from appClient import AppClient                   # importando o Construtor de appCliente.py
 import socket                                       # importando o módulo de Sockets
 
 HOST = '0.0.0.0'                                    # ip definido para o servidor
@@ -17,7 +17,7 @@ while (True):
     except:
         break                                       # caso não for possível se conectar, o server tentará novamente
 
-    app = AppCliente(connection, client)            # Construtor de appCliente.py
+    app = AppClient(connection, client)            # Construtor de appCliente.py
     app.start()                                     # inicia a thread de appCliente.py
 
 serverSock.close()                                  # encerra a conexão com o cliente

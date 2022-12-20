@@ -11,7 +11,6 @@ def processing(message, connection, client):
     if message[0].upper() == 'GET':               # está funcionando (mas é melhor mudar o nome do comando para bater com o protocolo do professor)
         fileName = ' '.join(message[1:])
         print(f'Arquivo solicitado: {fileName}')
-
         try:                                        # envio do tamanho do arquivo
             fileStatus = os.stat(fileName)
             connection.send(str.encode(f'+OK {fileStatus.st_size}\n'))
